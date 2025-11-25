@@ -1,24 +1,28 @@
 QT CW Tester v2.0
 --------------------
-QT CW Tester is a Python script to perform a simple verification of a Operator's common wallet. All CW API methods will be tested, along with various error cases. The testing is not comprehensive - this script is intended to be a tool to aid in the initial verification of an QT CW wallet implementation.
+QT CW Tester is a Node.js script to perform a simple verification of an Operator's common wallet. All CW API methods will be tested, along with various error cases. The testing is not comprehensive - this script is intended to be a tool to aid in the initial verification of a QT CW wallet implementation.
 
-The script is designed to run on a Mac OS X or Linux system, but it should be possible to run the test on Windows as well.
+The script is designed to run on Mac OS X, Linux, or Windows systems with Node.js installed.
 
 
 Requirements:
-Python version: 3.5.x
-Modules: os, sys, datetime, pytz, time, configparser, urllib2, json, decimal
+Node.js version: 14.0.0 or higher
+Modules: axios, decimal.js
 
 Files contained in the package:
-  cw_qtcw_tester.py - The main script
+  cw_qtcw_tester.js - The main script
   cw_qtcw_tester.cfg - Configuration for the script
-  qtcw.py - Helper functions for the CW communication
-  utils.py - General helper functions
+  qtcw.js - Helper functions for the CW communication
+  utils.js - General helper functions
+  package.json - Node.js package configuration
   README.txt - Help file
 
 Usage:
 
-- First, modify the cw_qtcw_tester.cfg file and fill in the following
+- First, install the required Node.js dependencies:
+  npm install
+
+- Then, modify the cw_qtcw_tester.cfg file and fill in the following
   walleturl - Operator's common wallet base url
   walletsession - The Operator generated player session token
   passkey - The shared secret pass-key.
@@ -34,21 +38,21 @@ Usage:
   amounttoreachinsufficientfund - The amount to replicate the insufficient funds scenario in debit
   rewardurl - callback url related to wins outside the regular games.
 
-- Then, run cw_btm_tester.py with one of the following arguments:
-  commonwallet - Performs success scenarios for verifysession, getbalance, withdrawal, rollback, deposit and reward
-  verifysession	- Performs verify session
-  getbalance - Performs GetBalance
-  withdrawal - Performs Withdrawal
-  deposit - Performs deposit
-  rollback - Performs rollback
-  reward - Performs reward
-  idempotency - Test for idempotency request on Withdrawal, Deposit, Rollback and Reward endpoints
-  errors - Tests multiple error cases to verify the returned error codes
-  future - Test for future api compatibility. Withdrawal, Deposit, Rollback, Reward endpoints should allow parameters that may be introduced in the future
-  all - Will trigger getbalance, common wallet, idempotency errors and future
+- Then, run cw_qtcw_tester.js with one of the following arguments:
+  node cw_qtcw_tester.js commonwallet - Performs success scenarios for verifysession, getbalance, withdrawal, rollback, deposit and reward
+  node cw_qtcw_tester.js verifysession - Performs verify session
+  node cw_qtcw_tester.js getbalance - Performs GetBalance
+  node cw_qtcw_tester.js withdrawal - Performs Withdrawal
+  node cw_qtcw_tester.js deposit - Performs deposit
+  node cw_qtcw_tester.js rollback - Performs rollback
+  node cw_qtcw_tester.js reward - Performs reward
+  node cw_qtcw_tester.js idempotency - Test for idempotency request on Withdrawal, Deposit, Rollback and Reward endpoints
+  node cw_qtcw_tester.js errors - Tests multiple error cases to verify the returned error codes
+  node cw_qtcw_tester.js future - Test for future api compatibility. Withdrawal, Deposit, Rollback, Reward endpoints should allow parameters that may be introduced in the future
+  node cw_qtcw_tester.js all - Will trigger getbalance, common wallet, idempotency errors and future
 
 Example:
-    ./cw_qtcw_tester.py all
+    node cw_qtcw_tester.js all
 
 A successful test run will yield the following result:
 2016-03-14 18:31:09.663420	Test successful! Common Wallet Tester completed in 0 seconds
@@ -59,6 +63,6 @@ If an scenario is does not passed the testing, it will immediately stop the test
 2016-03-15 10:39:17.613701	ERROR: Expected error is but actual is no error
 
 Debugging:
-   To see the http exchanges - request and response, define an environment varialbe: CW_DEBUG
+   To see the http exchanges - request and response, define an environment variable: CW_DEBUG
    Example:
-     CW_DEBUG=1 ./cw_qtcw_tester.py all
+     CW_DEBUG=1 node cw_qtcw_tester.js all

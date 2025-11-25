@@ -1,0 +1,24 @@
+{
+  "name": "qt-wallet-tester",
+  "version": "2.0.0",
+  "description": "QT CW Tester is a Node.js script to perform a simple verification of an Operator's common wallet",
+  "main": "cw_qtcw_tester.js",
+  "scripts": {
+    "test": "node cw_qtcw_tester.js all"
+  },
+  "keywords": [
+    "wallet",
+    "testing",
+    "qt",
+    "common-wallet"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "decimal.js": "^10.4.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
