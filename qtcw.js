@@ -122,7 +122,8 @@ class QTCW {
     
     if (!balanceAfterTxn.equals(balanceGetBalance)) {
       notmatchedmessage += `Balance After Txn and Get Balance Does Not Match ${balanceAfterTxn} != ${balanceGetBalance} `;
-    } else if (!balanceAfterTxn.equals(expectedBalance)) {
+    }
+    if (!balanceAfterTxn.equals(expectedBalance)) {
       notmatchedmessage += `Balance After Txn Is Not Expected: Expected: ${expectedBalance} Actual: ${balanceAfterTxn} `;
     }
 
