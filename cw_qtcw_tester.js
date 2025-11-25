@@ -42,7 +42,7 @@ async function deposit(qtcw, futureCompatible = 0, shouldLog = true) {
   const originalBalance = await qtcw.getBalance();
   const jsonresponse = await qtcw.success_deposit(amount, randomstr(), roundid, txnId, clientRoundId, futureCompatible);
   const balanceAfterTxn = getBalance(jsonresponse);
-  verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
+  await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
 
   console.log('');
   if (shouldLog) {
@@ -57,7 +57,7 @@ async function deposit(qtcw, futureCompatible = 0, shouldLog = true) {
   const originalBalance2 = await qtcw.getBalance();
   const jsonresponse2 = await qtcw.success_deposit_expiredSession(roundid2, txnId2, betid, clientRoundId2, amount);
   const balanceAfterTxn2 = getBalance(jsonresponse2);
-  verifyBalanceCredit(qtcw, originalBalance2, balanceAfterTxn2, amount);
+  await verifyBalanceCredit(qtcw, originalBalance2, balanceAfterTxn2, amount);
 
   await deposit_zero_balance(qtcw);
 }
@@ -73,7 +73,7 @@ async function rollback(qtcw, futureCompatible = 0) {
   const jsonresponse = await qtcw.success_withdrawal(amount, randomstr(), roundid, randomstr());
   const referenceid = jsonresponse.referenceId;
   const jsonresponse2 = await qtcw.success_rollback(referenceid, amount, randomstr(), roundid, randomstr(), futureCompatible);
-  const currentBalance2 = verifyBalanceCredit(qtcw, convertToDecimal(currentBalance), getBalance(jsonresponse2), amount);
+  const currentBalance2 = await verifyBalanceCredit(qtcw, convertToDecimal(currentBalance), getBalance(jsonresponse2), amount);
   return jsonresponse2;
 }
 
@@ -91,7 +91,7 @@ async function rollback_v2_internal(qtcw, futureCompatible = 0, walletsession = 
   await qtcw.success_withdrawal(amount, betIdForRollback, roundid, clientRoundId);
   const jsonresponse = await qtcw.success_rollback_v2(betIdForRollback, amount, randomstr(), roundid, clientRoundId, futureCompatible, walletsession);
   const balanceAfterTxn = getBalance(jsonresponse);
-  const currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, new Decimal(String(0)));
+  const currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, new Decimal(String(0)));
 
   console.log('');
   log('Performing rollback with expired wallet session');
@@ -102,7 +102,7 @@ async function rollback_v2_internal(qtcw, futureCompatible = 0, walletsession = 
   await qtcw.success_withdrawal(amount, betIdForRollback2, roundid2, clientRoundId2);
   const jsonresponse2 = await qtcw.success_rollback_v2_expired_session(betIdForRollback2, amount, randomstr(), roundid2, clientRoundId2, futureCompatible, walletsession);
   const balanceAfterTxn2 = getBalance(jsonresponse2);
-  verifyBalanceCredit(qtcw, originalBalance2, balanceAfterTxn2, new Decimal(String(0)));
+  await verifyBalanceCredit(qtcw, originalBalance2, balanceAfterTxn2, new Decimal(String(0)));
 
   return jsonresponse;
 }
@@ -114,7 +114,7 @@ async function reward(qtcw, futureCompatible = 0) {
   const txnId = randomstr();
   const jsonResponseReward = await qtcw.success_reward(amount, txnId, futureCompatible);
   const balanceAfterTxn = getBalance(jsonResponseReward);
-  verifyBalanceCredit(qtcw, balanceBeforeTxn, balanceAfterTxn, amount);
+  await verifyBalanceCredit(qtcw, balanceBeforeTxn, balanceAfterTxn, amount);
 }
 
 async function three_withdrawals_one_deposit(qtcw) {
@@ -132,20 +132,20 @@ async function three_withdrawals_one_deposit(qtcw) {
 
   let jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid1, roundid, clientRoundId);
   let currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid2, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid3, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   console.log('');
   const jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid3, clientRoundId, 1, 'true');
   const balanceAfterTxn = getBalance(jsonresponseDeposit);
-  const currentBalance2 = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
+  const currentBalance2 = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
 }
 
 async function three_withdrawals_three_deposits(qtcw) {
@@ -163,30 +163,30 @@ async function three_withdrawals_three_deposits(qtcw) {
 
   let jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid1, roundid, clientRoundId);
   let currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid2, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid3, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   let jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid1, clientRoundId, 1, 'false');
   let balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
   originalBalance = currentBalance;
 
   jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid2, clientRoundId, 1, 'false');
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
   originalBalance = currentBalance;
 
   console.log('');
   jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid3, clientRoundId, 1, 'true');
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
 }
 
 async function one_withdrawal_three_deposits(qtcw) {
@@ -202,22 +202,22 @@ async function one_withdrawal_three_deposits(qtcw) {
 
   const jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid1, roundid, clientRoundId);
   const currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   let jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid1, clientRoundId, 1, 'false');
   let balanceAfterTxn = getBalance(jsonresponseDeposit);
-  let currentBalance2 = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  let currentBalance2 = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
   originalBalance = currentBalance2;
 
   jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid1, clientRoundId, 1, 'false');
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance2 = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  currentBalance2 = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
   originalBalance = currentBalance2;
 
   console.log('');
   jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid1, clientRoundId, 1, 'true');
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance2 = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
+  currentBalance2 = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
 }
 
 async function multiple_transactions(qtcw) {
@@ -235,24 +235,24 @@ async function multiple_transactions(qtcw) {
 
   let jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid1, roundid, clientRoundId);
   let currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid2, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
 
   const jsonRollbackResponse = await qtcw.success_rollback_v2(betid2, amount, randomstr(), roundid, clientRoundId, futureCompatible, qtcw.config.walletsession, 'false');
   let balanceAfterTxn = getBalance(jsonRollbackResponse);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, new Decimal(String(0)));
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, new Decimal(String(0)));
 
   let jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid1, clientRoundId, 1, 'false');
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
   originalBalance = currentBalance;
 
   console.log('');
   jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid1, clientRoundId, 1, 'true');
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
 }
 
 async function idempotency(qtcw) {
@@ -356,24 +356,24 @@ async function errors(qtcw) {
   }
 }
 
-function verifyBalanceDebit(qtcw, originalBalance, balanceAfterTxn, amount) {
-  // Note: In the original Python code, this function calls qtcw.success_getbalance
-  // but it references a global qtcw variable. We'll skip the balance verification
-  // via getBalance since we're already checking the balance from the transaction response.
+async function verifyBalanceDebit(qtcw, originalBalance, balanceAfterTxn, amount) {
+  const jsonResponseBalance = await qtcw.success_getbalance(false);
+  const balanceGetBalance = getBalance(jsonResponseBalance);
   const debitedAmount = convertToDecimal(amount);
   const expectedBalance = originalBalance.minus(debitedAmount);
-  // qtcw.verifyequalbalance would be called here, but balanceGetBalance is not available
-  // We'll just return the balance after transaction
+  qtcw.verifyequalbalance(balanceAfterTxn, balanceGetBalance, expectedBalance);
   return balanceAfterTxn;
 }
 
-function verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, completed = 0) {
+async function verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, completed = 0) {
   let balanceGetBalance = balanceAfterTxn;
-  // In Python, there's a check for qtcw.config.verifybalanceondeposit
-  // We'll skip the actual getBalance call for simplicity and just verify the calculation
+  if (qtcw.config.verifybalanceondeposit || completed) {
+    const jsonResponseBalance = await qtcw.success_getbalance(false);
+    balanceGetBalance = getBalance(jsonResponseBalance);
+  }
   const creditedAmount = new Decimal(String(amount));
   const expectedBalance = originalBalance.plus(creditedAmount);
-  // qtcw.verifyequalbalance would be called here
+  qtcw.verifyequalbalance(balanceAfterTxn, balanceGetBalance, expectedBalance);
   return balanceAfterTxn;
 }
 
@@ -391,24 +391,24 @@ async function commonwallet(qtcw) {
 
   let jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid, roundid, clientRoundId);
   let currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid2, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
   const referenceid = jsonresponseWithdraw.referenceId;
 
   console.log('');
   const jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid2, clientRoundId, 1);
   const balanceAfterTxn = getBalance(jsonresponseDeposit);
-  const currentBalance2 = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
+  const currentBalance2 = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount, 1);
 
   console.log('');
   if (qtcw.config.rollbackurl) {
     originalBalance = getBalance(await qtcw.success_getbalance(false));
     const jsonresponse = await rollback_v2(qtcw);
     const balanceAfterTxn2 = getBalance(jsonresponse);
-    const currentBalance3 = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn2, new Decimal(String(0))); // no balance changes
+    const currentBalance3 = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn2, new Decimal(String(0))); // no balance changes
   } else {
     await rollback(qtcw);
   }
@@ -435,22 +435,22 @@ async function deposit_zero_balance(qtcw) {
 
   let jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid, roundid, clientRoundId);
   let currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
 
   jsonresponseWithdraw = await qtcw.success_withdrawal(amount, betid2, roundid, clientRoundId);
   currentBalance = getBalance(jsonresponseWithdraw);
-  originalBalance = verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
+  originalBalance = await verifyBalanceDebit(qtcw, originalBalance, currentBalance, amount);
   const referenceid = jsonresponseWithdraw.referenceId;
 
   console.log('');
   let jsonresponseDeposit = await qtcw.success_deposit(amount, randomstr(), roundid, betid2, clientRoundId, 1, 'false');
   let balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
 
   console.log('');
   jsonresponseDeposit = await qtcw.success_deposit(0, randomstr(), roundid, null, clientRoundId, 1);
   balanceAfterTxn = getBalance(jsonresponseDeposit);
-  currentBalance = verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
+  currentBalance = await verifyBalanceCredit(qtcw, originalBalance, balanceAfterTxn, amount);
 }
 
 async function all(qtcw) {

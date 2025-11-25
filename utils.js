@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
 /**
  * Log a message with timestamp
@@ -105,8 +106,6 @@ class Config {
  * @returns {Promise<object>} Response object with status and data
  */
 async function doRequest(url, customHeaders, payload) {
-  const axios = require('axios');
-  
   const headers = {
     'Accept': 'application/json',
     'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36',
